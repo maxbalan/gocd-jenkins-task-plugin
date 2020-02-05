@@ -1,4 +1,4 @@
-package java.io.maxbalan.gocd.plugin.jenkins.helpers
+package groovy.io.maxbalan.gocd.plugin.jenkins.helpers
 
 import groovy.text.SimpleTemplateEngine
 

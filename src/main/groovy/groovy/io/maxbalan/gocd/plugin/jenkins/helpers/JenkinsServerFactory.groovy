@@ -1,6 +1,6 @@
-package java.io.maxbalan.gocd.plugin.jenkins.helpers
+package groovy.io.maxbalan.gocd.plugin.jenkins.helpers
 
-import static java.io.maxbalan.gocd.plugin.jenkins.JenkinsPlugin.LOG
+import static groovy.io.maxbalan.gocd.plugin.jenkins.JenkinsPlugin.LOG
 
 import com.offbytwo.jenkins.JenkinsServer
 

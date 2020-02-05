@@ -1,8 +1,8 @@
-package java.io.maxbalan.gocd.plugin.jenkins.helpers
+package groovy.io.maxbalan.gocd.plugin.jenkins.helpers
 
-import static java.io.maxbalan.gocd.plugin.jenkins.JenkinsPlugin.LOG
+import static groovy.io.maxbalan.gocd.plugin.jenkins.JenkinsPlugin.LOG
 
-import java.io.maxbalan.gocd.plugin.jenkins.task.TaskExecutor
+import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskExecutor
 
 /**
  * Created on: 05/02/2020

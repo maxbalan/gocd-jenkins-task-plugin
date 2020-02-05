@@ -1,24 +1,18 @@
-package java.io.maxbalan.gocd.plugin.jenkins
+package groovy.io.maxbalan.gocd.plugin.jenkins
 
 
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationPassword
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationUser
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsJobAuthenticationToken
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsJobName
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsServerUrl
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JobParameters
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.LogPrint
+import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationPassword
+import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationUser
+import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsJobAuthenticationToken
+import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsJobName
+import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsServerUrl
+import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JobParameters
+import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.LogPrint
 import static java.util.Collections.emptyMap
 import static java.util.Collections.singletonMap
 
-import java.io.maxbalan.gocd.plugin.jenkins.helpers.GsonHelper
-import java.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper
-import java.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType
-import java.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory
-import java.io.maxbalan.gocd.plugin.jenkins.helpers.TemplateHelper
-import java.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult
-import java.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig
-import java.io.maxbalan.gocd.plugin.jenkins.task.TaskContext
+import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.GsonHelper
+import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskContext
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
@@ -38,18 +32,18 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse
  * @author Maxim Balan
  * */
 @Extension
-class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelper, PluginHelper {
+class JenkinsPlugin extends AbstractGoPlugin implements groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TemplateHelper, GsonHelper, groovy.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper {
     public static final Logger LOG = Logger.getLoggerFor(JenkinsPlugin.class)
     private static final Pattern PARAMS_PATTERN = Pattern.compile(
             "\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+)([,\\n]\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+))*")
 
-    private final TaskExecutorFactory taskExecutorFactory
+    private final groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory taskExecutorFactory
 
     public JenkinsPlugin() {
-        this(TaskExecutorFactory.getFactory())
+        this(groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory.getFactory())
     }
 
-    JenkinsPlugin(TaskExecutorFactory taskExecutorFactory) {
+    JenkinsPlugin(groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory taskExecutorFactory) {
         this.taskExecutorFactory = taskExecutorFactory
     }
 
@@ -57,13 +51,13 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
     public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
         final String requestName = requestMessage.requestName()
         LOG.info("[Jenkins Plugin] Got request [{}], body: {}", requestName, requestMessage.requestBody())
-        if (RequestType.TASK_CONFIGURATION.descriptor.equals(requestName)) {
+        if (groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType.TASK_CONFIGURATION.descriptor.equals(requestName)) {
             return handleGetConfigRequest()
-        } else if (RequestType.TASK_VALIDATE.descriptor.equals(requestName)) {
+        } else if (groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType.TASK_VALIDATE.descriptor.equals(requestName)) {
             return handleValidation(requestMessage)
-        } else if (RequestType.TASK_EXECUTE.descriptor.equals(requestName)) {
+        } else if (groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType.TASK_EXECUTE.descriptor.equals(requestName)) {
             return handleTaskExecution(requestMessage)
-        } else if (RequestType.TASK_VIEW.descriptor.equals(requestName)) {
+        } else if (groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType.TASK_VIEW.descriptor.equals(requestName)) {
             return handleTaskView()
         }
 
@@ -101,10 +95,10 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
         try {
             Map request = fromGson(requestMessage.requestBody(), Map.class)
             TaskContext taskContext = createTaskContext((Map) request.get("context"))
-            TaskConfig taskConfig = createTaskConfig((Map) request.get("config"),
-                                                     taskContext.getEnvironmentVariables())
+            groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig taskConfig = createTaskConfig((Map) request.get("config"),
+                                                                                                 taskContext.getEnvironmentVariables())
 
-            ExecutionResult taskResult = taskExecutorFactory.getTaskExecutor().execute(taskConfig, taskContext)
+            groovy.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult taskResult = taskExecutorFactory.getTaskExecutor().execute(taskConfig, taskContext)
             return successResponse(taskResult.toMap())
         } catch (Exception e) {
             String errorMessage = "Failed task execution: " + e.getMessage()
@@ -117,9 +111,9 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
         return new TaskContext(context)
     }
 
-    TaskConfig createTaskConfig(Map config, Map<String, String> environmentVariables) {
+    groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig createTaskConfig(Map config, Map<String, String> environmentVariables) {
         String params = getParamValue(config)
-        return new TaskConfig(
+        return new groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig(
                 processTemplate(getOrEmpty(config, JenkinsServerUrl.descriptor), environmentVariables),
                 processTemplate(getOrEmpty(config, JenkinsJobName.descriptor), environmentVariables),
                 processTemplate(getOrEmpty(config, JenkinsJobAuthenticationToken.descriptor), environmentVariables),

@@ -1,4 +1,4 @@
-package java.io.maxbalan.gocd.plugin.jenkins.helpers
+package groovy.io.maxbalan.gocd.plugin.jenkins.helpers
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

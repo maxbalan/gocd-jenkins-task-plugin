@@ -1,4 +1,4 @@
-package java.io.maxbalan.gocd.plugin.jenkins.task
+package groovy.io.maxbalan.gocd.plugin.jenkins.task
 
 
 /**

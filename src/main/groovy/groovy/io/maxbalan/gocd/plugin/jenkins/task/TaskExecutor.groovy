@@ -1,10 +1,8 @@
-package java.io.maxbalan.gocd.plugin.jenkins.task
+package groovy.io.maxbalan.gocd.plugin.jenkins.task
 
 
 import static com.offbytwo.jenkins.model.BuildResult.SUCCESS
-import static java.io.maxbalan.gocd.plugin.jenkins.JenkinsPlugin.LOG
-
-import java.io.maxbalan.gocd.plugin.jenkins.helpers.JenkinsServerFactory
+import static groovy.io.maxbalan.gocd.plugin.jenkins.JenkinsPlugin.LOG
 
 import com.offbytwo.jenkins.JenkinsServer
 import com.offbytwo.jenkins.model.Build
@@ -20,14 +18,14 @@ import com.thoughtworks.go.plugin.api.task.JobConsoleLogger
  * */
 class TaskExecutor {
 
-    private final JenkinsServerFactory jenkinsServerFactory
+    private final groovy.io.maxbalan.gocd.plugin.jenkins.helpers.JenkinsServerFactory jenkinsServerFactory
     private final JobConsoleLogger console
 
     public TaskExecutor() {
-        this(JenkinsServerFactory.getFactory(), JobConsoleLogger.getConsoleLogger())
+        this(groovy.io.maxbalan.gocd.plugin.jenkins.helpers.JenkinsServerFactory.getFactory(), JobConsoleLogger.getConsoleLogger())
     }
 
-    TaskExecutor(JenkinsServerFactory jenkinsServerFactory, JobConsoleLogger console) {
+    TaskExecutor(groovy.io.maxbalan.gocd.plugin.jenkins.helpers.JenkinsServerFactory jenkinsServerFactory, JobConsoleLogger console) {
         this.jenkinsServerFactory = jenkinsServerFactory
         this.console = console
     }
