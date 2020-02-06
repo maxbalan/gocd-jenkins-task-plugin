@@ -1,6 +1,7 @@
 package groovy.io.maxbalan.gocd.plugin.jenkins
 
-
+import groovy.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult
+import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig
 import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskContext
 import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper
 import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType
@@ -100,10 +101,10 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
         try {
             Map request = fromGson(requestMessage.requestBody(), Map.class)
             TaskContext taskContext = createTaskContext((Map) request.get("context"))
-            groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig taskConfig = createTaskConfig((Map) request.get("config"),
-                                                                                                 taskContext.getEnvironmentVariables())
+            TaskConfig taskConfig = createTaskConfig((Map) request.get("config"),
+                                                     taskContext.getEnvironmentVariables())
 
-            groovy.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult taskResult = taskExecutorFactory.getTaskExecutor().execute(taskConfig, taskContext)
+            ExecutionResult taskResult = taskExecutorFactory.getTaskExecutor().execute(taskConfig, taskContext)
             return successResponse(taskResult.toMap())
         } catch (Exception e) {
             String errorMessage = "Failed task execution: " + e.getMessage()
@@ -116,9 +117,9 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
         return new TaskContext(context)
     }
 
-    groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig createTaskConfig(Map config, Map<String, String> environmentVariables) {
+    TaskConfig createTaskConfig(Map config, Map<String, String> environmentVariables) {
         String params = getParamValue(config)
-        return new groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig(
+        return new TaskConfig(
                 processTemplate(getOrEmpty(config, JenkinsServerUrl.descriptor), environmentVariables),
                 processTemplate(getOrEmpty(config, JenkinsJobName.descriptor), environmentVariables),
                 processTemplate(getOrEmpty(config, JenkinsJobAuthenticationToken.descriptor), environmentVariables),
