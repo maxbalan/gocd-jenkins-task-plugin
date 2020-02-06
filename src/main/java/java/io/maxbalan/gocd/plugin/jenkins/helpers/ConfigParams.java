@@ -1,4 +1,4 @@
-package groovy.io.maxbalan.gocd.plugin.jenkins.helpers
+package java.io.maxbalan.gocd.plugin.jenkins.helpers;
 
 
 /**
@@ -6,23 +6,23 @@ package groovy.io.maxbalan.gocd.plugin.jenkins.helpers
  *
  * @author Maxim Balan
  * */
-enum ConfigParams {
+public enum ConfigParams {
     JenkinsServerUrl("jenkinsUrl"),
     JenkinsJobName("jobName"),
     JenkinsJobAuthenticationToken("jobToken"),
     JenkinsAuthenticationUser("username"),
     JenkinsAuthenticationPassword("password"),
     JobParameters("jobParams"),
-    LogPrint("shouldPrintLog"),
+    LogPrint("shouldPrintLog");
 
-    private def descriptor
+    private String descriptor;
 
     private ConfigParams(String descriptor) {
-        this.descriptor = descriptor
+        this.descriptor = descriptor;
     }
 
-    String getDescriptor() {
-        this.descriptor
+    public String getDescriptor() {
+        return this.descriptor;
     }
 
 }
