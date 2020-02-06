@@ -1,31 +1,20 @@
-package java.io.maxbalan.gocd.plugin.jenkins;
+/*
+ * Copyright 2020 ThoughtWorks, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationPassword;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationUser;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsJobAuthenticationToken;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsJobName;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsServerUrl;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JobParameters;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.LogPrint;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.GsonHelper.fromGson;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper.errorResponse;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper.processTemplate;
-import static java.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper.successResponse;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
-
-import java.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType;
-import java.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory;
-import java.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult;
-import java.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig;
-import java.io.maxbalan.gocd.plugin.jenkins.task.TaskContext;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
+package test.io.maxbalan.gocd.plugin.jenkins;
 
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
@@ -35,6 +24,24 @@ import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import org.apache.commons.io.IOUtils;
+
+import test.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType;
+import test.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory;
+import test.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult;
+import test.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig;
+import test.io.maxbalan.gocd.plugin.jenkins.task.TaskContext;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static test.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.*;
+import static test.io.maxbalan.gocd.plugin.jenkins.helpers.GsonHelper.fromGson;
+import static test.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper.*;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
 
 /**
  * Created on: 05/02/2020

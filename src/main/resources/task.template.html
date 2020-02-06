@@ -1,38 +1,38 @@
 <div class="form_item_block">
-    <label>Jenkins URL<span class="asterisk">*</span></label>
-    <input type="text" ng-model="url" style="width:500px;"/>
-    <span class="form_error" ng-show="GOINPUTNAME[url].$error.server">{{ GOINPUTNAME[url].$error.server }}</span>
+  <label>Jenkins URL<span class="asterisk">*</span></label>
+  <input type="text" ng-model="url" style="width:500px;"/>
+  <span class="form_error" ng-show="GOINPUTNAME[url].$error.server">{{ GOINPUTNAME[url].$error.server }}</span>
 </div>
 <div class="form_item_block">
-    <label>Job name<span class="asterisk">*</span></label>
-    <input type="text" ng-model="job" style="width:500px;"/>
-    <span class="form_error" ng-show="GOINPUTNAME[job].$error.server">{{ GOINPUTNAME[job].$error.server }}</span>
+  <label>Job name<span class="asterisk">*</span></label>
+  <input type="text" ng-model="job" style="width:500px;"/>
+  <span class="form_error" ng-show="GOINPUTNAME[job].$error.server">{{ GOINPUTNAME[job].$error.server }}</span>
 </div>
 <div class="form_item_block">
-    <label>Job Token</label>
-    <input type="text" ng-model="jenkinsToken" style="width:500px;"/>
-    <span class="form_error" ng-show="GOINPUTNAME[jenkinsToken].$error.server">{{ GOINPUTNAME[jenkinsToken].$error.server }}</span>
+  <label>Job Token</label>
+  <input type="text" ng-model="jenkinsToken" style="width:500px;"/>
+  <span class="form_error" ng-show="GOINPUTNAME[jenkinsToken].$error.server">{{ GOINPUTNAME[jenkinsToken].$error.server }}</span>
 </div>
 <div class="form_item_block">
-    <label>Username</label>
-    <input type="text" ng-model="username" style="width:500px;"/>
-    <span class="form_error" ng-show="GOINPUTNAME[username].$error.server">{{ GOINPUTNAME[username].$error.server }}</span>
+  <label>Username</label>
+  <input type="text" ng-model="username" style="width:500px;"/>
+  <span class="form_error" ng-show="GOINPUTNAME[username].$error.server">{{ GOINPUTNAME[username].$error.server }}</span>
 </div>
 <div class="form_item_block">
-    <label>Password</label>
-    <input type="text" ng-model="password" style="width:500px;"/>
-    <span class="form_error" ng-show="GOINPUTNAME[password].$error.server">{{ GOINPUTNAME[password].$error.server }}</span>
+  <label>Password</label>
+  <input type="text" ng-model="password" style="width:500px;"/>
+  <span class="form_error" ng-show="GOINPUTNAME[password].$error.server">{{ GOINPUTNAME[password].$error.server }}</span>
 </div>
 <div class="form_item_block">
-    <label>Params</label>
-    <textarea ng-model="params" style="width:500px;"></textarea>
-    <span class="form_error" ng-show="GOINPUTNAME[params].$error.server">{{ GOINPUTNAME[params].$error.server }}</span>
+  <label>Params</label>
+  <textarea ng-model="params" style="width:500px;"></textarea>
+  <span class="form_error" ng-show="GOINPUTNAME[params].$error.server">{{ GOINPUTNAME[params].$error.server }}</span>
 </div>
 <div class="form_item_block">
-    <label>Additional options:</label>
-    <div class="checkbox_row">
-        <input id="printlog2" type="checkbox" ng-model="printlog2" ng-init="printlog2 = printlog" ng-change="printlog = printlog2" ng-true-value="true" ng-false-value="false">
-        <input id="printlog" type="hidden" ng-model="printlog" value="{{printlog}}">
-        <label for="printlog">Print jenkins log</label>
-    </div>
+  <label>Additional options:</label>
+  <div class="checkbox_row">
+    <input id="printlog2" type="checkbox" ng-model="printlog2" ng-init="printlog2 = printlog" ng-change="printlog = printlog2" ng-true-value="true" ng-false-value="false">
+    <input id="printlog" type="hidden" ng-model="printlog" value="{{printlog}}">
+    <label for="printlog">Print jenkins log</label>
+  </div>
 </div>
