@@ -10,13 +10,13 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse
  *
  * @author Maxim Balan
  * */
-trait PluginHelper {
+trait PluginHelper implements GsonHelper {
     public static <T> GoPluginApiResponse successResponse(final T body) {
-        return DefaultGoPluginApiResponse.success(GsonHelper.toGson(body))
+        return DefaultGoPluginApiResponse.success(toGson(body))
     }
 
     public static <T> GoPluginApiResponse errorResponse(final T body) {
-        return DefaultGoPluginApiResponse.error(GsonHelper.toGson(body))
+        return DefaultGoPluginApiResponse.error(toGson(body))
     }
 
     public static Map<String, Object> createField(String displayName,

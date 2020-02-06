@@ -1,5 +1,6 @@
 package groovy.io.maxbalan.gocd.plugin.jenkins.task
 
+import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.JenkinsServerFactory
 
 import static com.offbytwo.jenkins.model.BuildResult.SUCCESS
 import static groovy.io.maxbalan.gocd.plugin.jenkins.JenkinsPlugin.LOG
@@ -9,7 +10,6 @@ import com.offbytwo.jenkins.model.Build
 import com.offbytwo.jenkins.model.JobWithDetails
 import com.offbytwo.jenkins.model.QueueItem
 import com.offbytwo.jenkins.model.QueueReference
-import com.thoughtworks.go.plugin.api.task.JobConsoleLogger
 
 /**
  * Created on: 05/02/2020
@@ -17,22 +17,20 @@ import com.thoughtworks.go.plugin.api.task.JobConsoleLogger
  * @author Maxim Balan
  * */
 class TaskExecutor {
+    private final static int JOB_CHECK_THRESHOLD = 5 //in seconds
 
-    private final groovy.io.maxbalan.gocd.plugin.jenkins.helpers.JenkinsServerFactory jenkinsServerFactory
-    private final JobConsoleLogger console
+    private final JenkinsServerFactory jenkinsServerFactory
 
     public TaskExecutor() {
-        this(groovy.io.maxbalan.gocd.plugin.jenkins.helpers.JenkinsServerFactory.getFactory(), JobConsoleLogger.getConsoleLogger())
+        this(JenkinsServerFactory.getFactory())
     }
 
-    TaskExecutor(groovy.io.maxbalan.gocd.plugin.jenkins.helpers.JenkinsServerFactory jenkinsServerFactory, JobConsoleLogger console) {
+    TaskExecutor(JenkinsServerFactory jenkinsServerFactory) {
         this.jenkinsServerFactory = jenkinsServerFactory
-        this.console = console
     }
 
     public ExecutionResult execute(TaskConfig taskConfig, TaskContext taskContext) {
-        console.printLine("Executing request to url [" + taskConfig.getUrl() + "] job [" + taskConfig.getJobName() + "]")
-        console.printEnvironment(taskConfig.getParams())
+        LOG.info("[Jenkins Plugin] Trigger job [ {} ]", taskConfig.getJobName())
 
         try {
             JenkinsServer jenkinsServer
@@ -60,7 +58,6 @@ class TaskExecutor {
         LOG.info("[Jenkins Plugin] Job found [ {} ]", job.getName())
         LOG.info("[Jenkins Plugin] Job parameters [ {} ]", taskConfig.getParams())
 
-        console.printLine("Building job...")
         QueueReference queueReference = taskConfig.getParams()
                 .isEmpty() ? job.build() : job.build(taskConfig.getParams())
 
@@ -68,26 +65,31 @@ class TaskExecutor {
         QueueItem queueItem = jenkinsServer.getQueueItem(queueReference)
 
         while (queueItem.getExecutable() == null) {
-            console.printLine("Job still in queue" + queueItem.getExecutable())
-            Thread.sleep(2000)
+            LOG.info("[Jenkins Plugin] Job is in the queue, will wait [ {} seconds ] before checking again",
+                     JOB_CHECK_THRESHOLD)
+            Thread.sleep(JOB_CHECK_THRESHOLD * 1000)
 
             queueItem = jenkinsServer.getQueueItem(queueReference)
         }
 
         Build build = jenkinsServer.getBuild(queueItem)
-        console.printLine("Job id [" + build.getNumber() + "] is in progress. URL: " + build.getUrl())
+        LOG.info("[Jenkins Plugin] Job [ {} ] was triggered, current build [ {} ]",
+                 taskConfig.getJobName(),
+                 build.getNumber())
         while (build.details().isBuilding()) {
-            console.printLine("Job still running")
-            Thread.sleep(10000)
+            LOG.info("[Jenkins Plugin] Looks like the job [ {} ] is still running, will wait for [ {} seconds] before checking again", taskConfig.getJobName(), JOB_CHECK_THRESHOLD)
+            Thread.sleep(JOB_CHECK_THRESHOLD * 1000)
         }
 
-        console.printLine("Job done. Result = " + build.details().getResult())
-        if (taskConfig.isPrintLog())
-            console.printLine("Jenkins console output:\n" + build.details().getConsoleOutputText())
+        LOG.info("[Jenkins Plugin] Job has finished [ {} ]", build.details().getResult())
+        if (taskConfig.isPrintLog()) {
+            LOG.info("[Jenkins Plugin] Job [ {} ] console output [ {} ]",
+                     taskConfig.getJobName(),
+                     build.details().getConsoleOutputText())
+        }
 
         return new ExecutionResult(
                 SUCCESS.equals(build.details().getResult()),
-                "Jenkins Console:\n" + build.details().getConsoleOutputText()
-        )
+                "[Jenkins Plugin] Job [ " + taskConfig.getJobName() + " ] console output:\n" + build.details().getConsoleOutputText())
     }
 }

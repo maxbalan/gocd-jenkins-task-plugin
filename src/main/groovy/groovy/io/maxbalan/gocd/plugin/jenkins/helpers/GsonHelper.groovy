@@ -8,11 +8,11 @@ package groovy.io.maxbalan.gocd.plugin.jenkins.helpers
  * */
 trait GsonHelper {
 
-    public <T> T fromGson(String json, Class<T> classOfT) {
+    public static <T> T fromGson(String json, Class<T> classOfT) {
         GsonSingleton.gson().fromJson(json, classOfT)
     }
 
-    public <T> String toGson(T obj) {
+    public static  <T> String toGson(T obj) {
         GsonSingleton.gson().toJson(obj)
     }
 

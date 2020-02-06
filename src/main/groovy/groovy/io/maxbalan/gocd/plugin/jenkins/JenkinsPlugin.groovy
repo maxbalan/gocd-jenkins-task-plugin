@@ -1,6 +1,12 @@
 package groovy.io.maxbalan.gocd.plugin.jenkins
 
 
+import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskContext
+import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper
+import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType
+import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory
+import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TemplateHelper
+
 import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationPassword
 import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationUser
 import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsJobAuthenticationToken
@@ -12,7 +18,7 @@ import static java.util.Collections.emptyMap
 import static java.util.Collections.singletonMap
 
 import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.GsonHelper
-import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskContext
+
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
@@ -32,18 +38,17 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse
  * @author Maxim Balan
  * */
 @Extension
-class JenkinsPlugin extends AbstractGoPlugin implements groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TemplateHelper, GsonHelper, groovy.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper {
+class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelper, PluginHelper {
     public static final Logger LOG = Logger.getLoggerFor(JenkinsPlugin.class)
-    private static final Pattern PARAMS_PATTERN = Pattern.compile(
-            "\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+)([,\\n]\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+))*")
+    private static final Pattern PARAMS_PATTERN = Pattern.compile("\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+)([,\\n]\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+))*")
 
-    private final groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory taskExecutorFactory
+    private final TaskExecutorFactory taskExecutorFactory
 
     public JenkinsPlugin() {
-        this(groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory.getFactory())
+        this(TaskExecutorFactory.getFactory())
     }
 
-    JenkinsPlugin(groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory taskExecutorFactory) {
+    JenkinsPlugin(TaskExecutorFactory taskExecutorFactory) {
         this.taskExecutorFactory = taskExecutorFactory
     }
 
@@ -51,13 +56,13 @@ class JenkinsPlugin extends AbstractGoPlugin implements groovy.io.maxbalan.gocd.
     public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
         final String requestName = requestMessage.requestName()
         LOG.info("[Jenkins Plugin] Got request [{}], body: {}", requestName, requestMessage.requestBody())
-        if (groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType.TASK_CONFIGURATION.descriptor.equals(requestName)) {
+        if (RequestType.TASK_CONFIGURATION.descriptor.equals(requestName)) {
             return handleGetConfigRequest()
-        } else if (groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType.TASK_VALIDATE.descriptor.equals(requestName)) {
+        } else if (RequestType.TASK_VALIDATE.descriptor.equals(requestName)) {
             return handleValidation(requestMessage)
-        } else if (groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType.TASK_EXECUTE.descriptor.equals(requestName)) {
+        } else if (RequestType.TASK_EXECUTE.descriptor.equals(requestName)) {
             return handleTaskExecution(requestMessage)
-        } else if (groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType.TASK_VIEW.descriptor.equals(requestName)) {
+        } else if (RequestType.TASK_VIEW.descriptor.equals(requestName)) {
             return handleTaskView()
         }
 
@@ -138,7 +143,7 @@ class JenkinsPlugin extends AbstractGoPlugin implements groovy.io.maxbalan.gocd.
         view.put("displayValue", "Jenkins")
         try {
             view.put("template",
-                     IOUtils.toString(getClass().getResourceAsStream("/views/task.template.html"), "UTF-8"))
+                     IOUtils.toString(getClass().getResourceAsStream("/task.template.html"), "UTF-8"))
             return successResponse(view)
         } catch (Exception e) {
             String errorMessage = "Failed to find template: " + e.getMessage()
