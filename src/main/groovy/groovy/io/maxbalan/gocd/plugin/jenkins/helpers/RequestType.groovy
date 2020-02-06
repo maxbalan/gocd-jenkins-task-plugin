@@ -37,7 +37,7 @@ enum RequestType {
         return r != UNKNOWN
     }
 
-    def getDescriptor() {
+    String getDescriptor() {
         this.descriptor
     }
 

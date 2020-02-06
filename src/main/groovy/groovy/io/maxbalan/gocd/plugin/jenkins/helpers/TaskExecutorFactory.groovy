@@ -10,10 +10,10 @@ import static groovy.io.maxbalan.gocd.plugin.jenkins.JenkinsPlugin.LOG
  * @author Maxim Balan
  * */
 class TaskExecutorFactory {
-    private static TaskExecutorFactory instance = new TaskExecutorFactory()
+    private static TaskExecutorFactory INSTANCE = new TaskExecutorFactory()
 
     public static TaskExecutorFactory getFactory() {
-        return instance
+        return INSTANCE
     }
 
     private TaskExecutorFactory() {
