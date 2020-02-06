@@ -20,7 +20,6 @@ import java.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult;
 import java.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig;
 import java.io.maxbalan.gocd.plugin.jenkins.task.TaskContext;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -28,7 +27,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 
-import com.thoughtworks.go.plugin.api.AbstractGoPlugin;
+import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
+import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
@@ -42,11 +42,12 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
  * @author Maxim Balan
  * */
 @Extension
-public class JenkinsPlugin extends AbstractGoPlugin {
+public class JenkinsPlugin implements GoPlugin {
     public static final Logger LOG = Logger.getLoggerFor(JenkinsPlugin.class);
     private static final Pattern PARAMS_PATTERN = Pattern.compile("\\w+=(\\$(\\{\\w+}|\\w+)|\\w+)([,\\n]\\w+=(\\$(\\{\\w+}|\\w+)|\\w+))*");
 
     private final TaskExecutorFactory taskExecutorFactory;
+    private GoApplicationAccessor accessor;
 
     public JenkinsPlugin() {
         this(TaskExecutorFactory.getFactory());
@@ -57,9 +58,14 @@ public class JenkinsPlugin extends AbstractGoPlugin {
     }
 
     @Override
+    public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
+        this.accessor = goApplicationAccessor;
+    }
+
+    @Override
     public GoPluginApiResponse handle(GoPluginApiRequest requestMessage) throws UnhandledRequestTypeException {
         final String requestName = requestMessage.requestName();
-        LOG.info("[Jenkins Plugin] Got request [{}], body: {}", requestName, requestMessage.requestBody());
+        LOG.info("[Jenkins Plugin] Got request [{}], body: [ {}]", requestName, requestMessage.requestBody());
         if (RequestType.TASK_CONFIGURATION.getDescriptor().equalsIgnoreCase(requestName)) {
             return handleGetConfigRequest();
         } else if (RequestType.TASK_VALIDATE.getDescriptor().equalsIgnoreCase(requestName)) {
@@ -175,6 +181,6 @@ public class JenkinsPlugin extends AbstractGoPlugin {
 
     @Override
     public GoPluginIdentifier pluginIdentifier() {
-        return new GoPluginIdentifier("task", Collections.singletonList("1.0"));
+        return new GoPluginIdentifier("task", Arrays.asList("1.0"));
     }
 }

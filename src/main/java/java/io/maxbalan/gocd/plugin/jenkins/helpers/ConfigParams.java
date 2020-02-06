@@ -6,7 +6,7 @@ package java.io.maxbalan.gocd.plugin.jenkins.helpers;
  *
  * @author Maxim Balan
  * */
-public enum ConfigParams {
+public enum  ConfigParams {
     JenkinsServerUrl("jenkinsUrl"),
     JenkinsJobName("jobName"),
     JenkinsJobAuthenticationToken("jobToken"),

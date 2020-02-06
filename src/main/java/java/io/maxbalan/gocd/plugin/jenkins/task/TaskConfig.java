@@ -3,8 +3,7 @@ package java.io.maxbalan.gocd.plugin.jenkins.task;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.platform.commons.util.StringUtils;
-
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Created on: 05/02/2020
