@@ -2,8 +2,6 @@ package groovy.io.maxbalan.gocd.plugin.jenkins
 
 import spock.lang.Specification
 
-import java.util.regex.Pattern
-
 /**
  * Created on: 07/02/2020
  *
@@ -13,29 +11,25 @@ class JobParametersPatternRegexSpec extends Specification {
 
     JenkinsPlugin plugin
 
-    public static final Pattern JobParametersPattern = Pattern.compile('''^([^=]*)=(.*)$''', Pattern.DOTALL)
-    public static final Pattern JobParametersPattern2 = Pattern.compile("\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+)([,\n]\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+))*")
     def setup() {
         plugin = Mock(JenkinsPlugin)
-//        Field f = JenkinsPlugin.class.getDeclaredField("LOG")
-//        f.set(null, null)
     }
 
-    def "when processing a multiline parameters input then correctly select the parameters"() {
+    def "when processing a multiline parameters input then pattern should find a match"() {
         given:
-        def ml = ''' t1_=asaasas sss  
-t2=s-f
-t_3=${test}
-t4=$test
-
-   t5="a"'''
+        def ml = "  t1_=asaasas sss  \n" +
+                "t2=s-f\n" +
+                "t_3=\${test}\n" +
+                "t4=\$test\n" +
+                "\n" +
+                "   t5=\"a\"" +
+                "t6=asd-sds"
 
         when:
-        def matcher = JobParametersPattern.matcher(ml).matches()
+        def matcher = JenkinsPlugin.JobParametersPattern.matcher(ml).matches()
 
         then:
-        println matcher
-        println JobParametersPattern2.matcher(ml).matches()
-        true
+        matcher
     }
+
 }

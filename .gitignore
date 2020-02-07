@@ -6,6 +6,7 @@ build/
 
 # the gradle temp dir
 .gradle
+./jenkins-plugin/out
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar

@@ -40,7 +40,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse
 @Extension
 class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelper, PluginHelper {
     public static final Logger LOG = Logger.getLoggerFor(JenkinsPlugin.class)
-    public static final Pattern JobParametersPattern = Pattern.compile("\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+)([,\\n]\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+))*")
+    public static final Pattern JobParametersPattern = Pattern.compile('''^([^=]*)=(.*)$''', Pattern.DOTALL)
 
     private final TaskExecutorFactory taskExecutorFactory
 
@@ -73,12 +73,9 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
         final Map<String, Object> configMap = new HashMap<>()
         configMap.put(JenkinsServerUrl.descriptor, createField(JenkinsServerUrl.descriptor, true, false, "0"))
         configMap.put(JenkinsJobName.descriptor, createField(JenkinsJobName.descriptor, true, false, "1"))
-        configMap.put(JenkinsJobAuthenticationToken.descriptor,
-                      createField(JenkinsJobAuthenticationToken.descriptor, false, true, "2"))
-        configMap.put(JenkinsAuthenticationUser.descriptor,
-                      createField(JenkinsAuthenticationUser.descriptor, true, false, "3"))
-        configMap.put(JenkinsAuthenticationPassword.descriptor,
-                      createField(JenkinsAuthenticationPassword.descriptor, false, true, "4"))
+        configMap.put(JenkinsJobAuthenticationToken.descriptor, createField(JenkinsJobAuthenticationToken.descriptor, false, true, "2"))
+        configMap.put(JenkinsAuthenticationUser.descriptor, createField(JenkinsAuthenticationUser.descriptor, true, false, "3"))
+        configMap.put(JenkinsAuthenticationPassword.descriptor, createField(JenkinsAuthenticationPassword.descriptor, false, true, "4"))
         configMap.put(JobParameters.descriptor, createField(JobParameters.descriptor, false, false, "5"))
         configMap.put(LogPrint.descriptor, createField(LogPrint.descriptor, false, false, "6"))
         return successResponse(configMap)
@@ -90,7 +87,7 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
 
         String paramsValue = unpackJobParameters(request)
         if (!paramsValue.isEmpty() && !JobParametersPattern.matcher(paramsValue).matches()) {
-            errors.put(JobParameters.descriptor, "Params syntax is <PARAM>=<VALUE>, with COMMA or NEWLINE delimiter")
+            errors.put(JobParameters.descriptor, "Params syntax is KEY=VALUE, each added on a new line")
         }
 
         return successResponse(singletonMap("errors", errors))

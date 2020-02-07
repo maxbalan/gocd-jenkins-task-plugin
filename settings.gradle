@@ -1,5 +1,8 @@
-include 'gocd/plugin-infra/go-plugin-api-internal'
 include 'jenkins-plugin'
 findProject(':jenkins-plugin')?.name = 'jenkins-task-plugin'
+
+//this is here because gocd plugin is missing the LoggingService class which is part of
+// com.thoughtworks.go.plugin.internal.api.LoggingService
+include 'gocd/plugin-infra/go-plugin-api-internal'
 findProject(':gocd/plugin-infra/go-plugin-api-internal')?.name = 'gocd'
 

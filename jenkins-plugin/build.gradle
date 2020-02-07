@@ -57,7 +57,9 @@ dependencies {
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
   //testing
-  compile project(':gocd')
+  //this is here because gocd plugin is missing the LoggingService class which is part of
+  // com.thoughtworks.go.plugin.internal.api.LoggingService
+  testCompile project(':gocd')
   testCompile group: 'org.spockframework', name: 'spock-core', version: spockVersion
   testCompile group: 'cglib', name: 'cglib', version: '3.3.0'
   testCompile group: 'org.objenesis', name: 'objenesis', version: '3.1'
