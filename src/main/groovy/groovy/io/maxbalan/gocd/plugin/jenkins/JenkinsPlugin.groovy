@@ -136,7 +136,11 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
     }
 
     private String getParamValue(Map request) {
-        return getOrEmpty(request, JobParameters.descriptor).replaceAll("\\r", "")
+        def params = getOrEmpty(request, JobParameters.descriptor).replaceAll("\\r", "")
+
+        LOG.info("[Jenkins Plugin] Job parameter received [ {} ]", params)
+
+        params
     }
 
     private GoPluginApiResponse handleTaskView() {
