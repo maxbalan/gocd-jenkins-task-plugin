@@ -1,12 +1,13 @@
 package groovy.io.maxbalan.gocd.plugin.jenkins
 
-import groovy.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult
-import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig
-import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskContext
+import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.GsonHelper
 import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.PluginHelper
 import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.RequestType
 import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TaskExecutorFactory
 import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.TemplateHelper
+import groovy.io.maxbalan.gocd.plugin.jenkins.task.ExecutionResult
+import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskConfig
+import groovy.io.maxbalan.gocd.plugin.jenkins.task.TaskContext
 
 import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationPassword
 import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JenkinsAuthenticationUser
@@ -17,8 +18,6 @@ import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.JobPar
 import static groovy.io.maxbalan.gocd.plugin.jenkins.helpers.ConfigParams.LogPrint
 import static java.util.Collections.emptyMap
 import static java.util.Collections.singletonMap
-
-import groovy.io.maxbalan.gocd.plugin.jenkins.helpers.GsonHelper
 
 import java.util.regex.Pattern
 import java.util.stream.Collectors
@@ -41,7 +40,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse
 @Extension
 class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelper, PluginHelper {
     public static final Logger LOG = Logger.getLoggerFor(JenkinsPlugin.class)
-    private static final Pattern PARAMS_PATTERN = Pattern.compile("\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+)([,\\n]\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+))*")
+    public static final Pattern JobParametersPattern = Pattern.compile("\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+)([,\\n]\\w+=(\\\$(\\{\\w+}|\\w+)|\\w+))*")
 
     private final TaskExecutorFactory taskExecutorFactory
 
@@ -89,8 +88,8 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
         Map<String, String> errors = new HashMap<>()
         Map request = fromGson(requestMessage.requestBody(), Map.class)
 
-        String paramsValue = getParamValue(request)
-        if (!paramsValue.isEmpty() && !PARAMS_PATTERN.matcher(paramsValue).matches()) {
+        String paramsValue = unpackJobParameters(request)
+        if (!paramsValue.isEmpty() && !JobParametersPattern.matcher(paramsValue).matches()) {
             errors.put(JobParameters.descriptor, "Params syntax is <PARAM>=<VALUE>, with COMMA or NEWLINE delimiter")
         }
 
@@ -118,29 +117,32 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
     }
 
     TaskConfig createTaskConfig(Map config, Map<String, String> environmentVariables) {
-        String params = getParamValue(config)
-        return new TaskConfig(
-                processTemplate(getOrEmpty(config, JenkinsServerUrl.descriptor), environmentVariables),
-                processTemplate(getOrEmpty(config, JenkinsJobName.descriptor), environmentVariables),
-                processTemplate(getOrEmpty(config, JenkinsJobAuthenticationToken.descriptor), environmentVariables),
-                processTemplate(getOrEmpty(config, JenkinsAuthenticationUser.descriptor), environmentVariables),
-                processTemplate(getOrEmpty(config, JenkinsAuthenticationPassword.descriptor), environmentVariables),
-                Boolean.parseBoolean(getOrEmpty(config, LogPrint.descriptor)),
-                params.isEmpty() ?
-                        emptyMap() :
-                        Arrays.stream(replaceWithEnv(params, environmentVariables).split("[,\\n]"))
-                                .map({ s -> s.split("=") })
-                                .collect(Collectors.toMap({ s -> (s[0] as String).trim() },
-                                                          { s -> (s[1] as String).trim() }))
-        )
+        String params = unpackJobParameters(config)
+
+        def configTask = new TaskConfig(processTemplate(getOrEmpty(config, JenkinsServerUrl.descriptor), environmentVariables),
+                                        processTemplate(getOrEmpty(config, JenkinsJobName.descriptor), environmentVariables),
+                                        processTemplate(getOrEmpty(config, JenkinsJobAuthenticationToken.descriptor), environmentVariables),
+                                        processTemplate(getOrEmpty(config, JenkinsAuthenticationUser.descriptor), environmentVariables),
+                                        processTemplate(getOrEmpty(config, JenkinsAuthenticationPassword.descriptor), environmentVariables),
+                                        Boolean.parseBoolean(getOrEmpty(config, LogPrint.descriptor)),
+                                        params.isEmpty() ?
+                                                emptyMap() :
+                                                Arrays.stream(replaceWithEnv(params, environmentVariables).split("[,\\n]"))
+                                                        .map({ s -> s.split("=") })
+                                                        .collect(Collectors.toMap({ s -> (s[0] as String).trim() },
+                                                                                  { s -> (s[1] as String).trim() })))
+
+        LOG.info("[Jenkins Plugin] Parsed job configuration [ {} ]", configTask)
+
+        configTask
     }
 
-    private String getParamValue(Map request) {
-        def params = getOrEmpty(request, JobParameters.descriptor).replaceAll("\\r", "")
+    private String unpackJobParameters(Map request) {
+        def jobParams = getOrEmpty(request, JobParameters.descriptor).replaceAll("\\r", "")
 
-        LOG.info("[Jenkins Plugin] Job parameter received [ {} ]", params)
+        LOG.info("[Jenkins Plugin] Job parameter received [ {} ]", jobParams)
 
-        params
+        jobParams
     }
 
     private GoPluginApiResponse handleTaskView() {
