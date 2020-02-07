@@ -2,6 +2,8 @@ package groovy.io.maxbalan.gocd.plugin.jenkins.task
 
 import org.junit.platform.commons.util.StringUtils
 
+import com.google.common.base.MoreObjects
+
 
 /**
  * Created on: 05/02/2020
@@ -68,5 +70,18 @@ class TaskConfig {
         }
 
         return map
+    }
+
+    @Override
+    String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("url", url)
+                .add("jobName", jobName)
+                .add("jobToken", jobToken)
+                .add("username", username)
+                .add("password", password)
+                .add("printLog", printLog)
+                .add("params", params)
+                .toString()
     }
 }

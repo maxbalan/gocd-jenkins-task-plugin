@@ -41,6 +41,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse
 class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelper, PluginHelper {
     public static final Logger LOG = Logger.getLoggerFor(JenkinsPlugin.class)
     public static final Pattern JobParametersPattern = Pattern.compile('''^([^=]*)=(.*)$''', Pattern.DOTALL)
+    public static final Pattern JobMultilineParametersSplitPattern = Pattern.compile('''([=])''')
 
     private final TaskExecutorFactory taskExecutorFactory
 
@@ -124,8 +125,8 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
                                         Boolean.parseBoolean(getOrEmpty(config, LogPrint.descriptor)),
                                         params.isEmpty() ?
                                                 emptyMap() :
-                                                Arrays.stream(replaceWithEnv(params, environmentVariables).split("[,\\n]"))
-                                                        .map({ s -> s.split("=") })
+                                                Arrays.stream(replaceWithEnv(params, environmentVariables).split("[,]"))
+                                                        .map({ s -> s.split(JobMultilineParametersSplitPattern.pattern(), 2) })
                                                         .collect(Collectors.toMap({ s -> (s[0] as String).trim() },
                                                                                   { s -> (s[1] as String).trim() })))
 
@@ -135,9 +136,11 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
     }
 
     private String unpackJobParameters(Map request) {
+        LOG.info("[Jenkins Plugin] Job parameter unpacked request [ {} ]", request)
+
         def jobParams = getOrEmpty(request, JobParameters.descriptor).replaceAll("\\r", "")
 
-        LOG.info("[Jenkins Plugin] Job parameter received [ {} ]", jobParams)
+        LOG.info("[Jenkins Plugin] Job parameter unpacked [ {} ]", jobParams)
 
         jobParams
     }
