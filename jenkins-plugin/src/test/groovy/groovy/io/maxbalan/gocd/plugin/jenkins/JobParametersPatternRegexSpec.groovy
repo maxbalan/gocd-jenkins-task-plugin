@@ -2,12 +2,7 @@ package groovy.io.maxbalan.gocd.plugin.jenkins
 
 import spock.lang.Specification
 
-import java.lang.reflect.Field
-import java.util.regex.Matcher
 import java.util.regex.Pattern
-
-import org.testng.log4testng.Logger
-
 
 /**
  * Created on: 07/02/2020

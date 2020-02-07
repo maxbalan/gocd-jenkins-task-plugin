@@ -1,2 +1,5 @@
-rootProject.name = 'gocd-jenkins-task-plugin'
+include 'gocd/plugin-infra/go-plugin-api-internal'
+include 'jenkins-plugin'
+findProject(':jenkins-plugin')?.name = 'jenkins-task-plugin'
+findProject(':gocd/plugin-infra/go-plugin-api-internal')?.name = 'gocd'
 
