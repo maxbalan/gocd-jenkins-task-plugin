@@ -1,3 +1,3 @@
 [submodule "gocd"]
 	path = gocd
-	url = git@github.com:gocd/gocd.git
+	url = https://github.com/gocd/gocd.git
