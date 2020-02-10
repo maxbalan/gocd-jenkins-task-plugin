@@ -1,5 +1,7 @@
 package groovy.io.maxbalan.gocd.plugin.jenkins.task
 
+import com.google.common.base.MoreObjects
+
 
 /**
  * Created on: 05/02/2020
@@ -21,6 +23,14 @@ class TaskContext {
 
     public String getWorkingDir() {
         return workingDir
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("environmentVariables", environmentVariables)
+                .add("workingDir", workingDir)
+                .toString();
     }
 
 }

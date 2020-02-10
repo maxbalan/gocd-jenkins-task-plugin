@@ -128,7 +128,7 @@ class JenkinsPlugin extends AbstractGoPlugin implements TemplateHelper, GsonHelp
                                                 Arrays.stream(replaceWithEnv(params, environmentVariables).split("[,]"))
                                                         .map({ s -> s.split(JobMultilineParametersSplitPattern.pattern(), 2) })
                                                         .collect(Collectors.toMap({ s -> (s[0] as String).trim() },
-                                                                                  { s -> (s[1] as String).trim() })))
+                                                                                  { s -> (s[1] as String).trim().replace("\"", "")})))
 
         LOG.info("[Jenkins Plugin] Parsed job configuration [ {} ]", configTask)
 

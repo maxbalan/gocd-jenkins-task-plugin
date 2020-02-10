@@ -56,8 +56,9 @@ class JenkinsPluginSpec extends Specification {
                 jobParams: [
                         secure: false,
                         required: false,
-                        value : "t1=asd\n" +
-                                "ffff"
+                        value : "t1=\"asd\n" +
+                                "ffff\",\n" +
+                                "t2=\"a1=3\""
                 ]
         ]
 
@@ -71,6 +72,7 @@ class JenkinsPluginSpec extends Specification {
         then:
         println "Test result: $r"
         r.params.t1 == "asd\nffff"
+        r.params.t2 == "a1=3"
     }
 
 }

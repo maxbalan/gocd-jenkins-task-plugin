@@ -21,7 +21,7 @@ class TaskExecutor {
     private final static int JOB_CHECK_THRESHOLD = 5 //in seconds
 
     private final JenkinsServerFactory jenkinsServerFactory
-    private final JobConsoleLogger console;
+    private final JobConsoleLogger console
 
     public TaskExecutor() {
         this(JenkinsServerFactory.getFactory(), JobConsoleLogger.getConsoleLogger())
@@ -29,7 +29,7 @@ class TaskExecutor {
 
     TaskExecutor(JenkinsServerFactory jenkinsServerFactory, JobConsoleLogger console) {
         this.jenkinsServerFactory = jenkinsServerFactory
-        this.console = console;
+        this.console = console
     }
 
     public ExecutionResult execute(TaskConfig taskConfig, TaskContext taskContext) {
@@ -49,6 +49,8 @@ class TaskExecutor {
 
             return exec(jenkinsServer, taskConfig, taskContext)
         } catch (Exception e) {
+            LOG.error("[Jenkins Plugin] task configuration used [ {} ]", taskConfig)
+            LOG.error("[Jenkins Plugin] task context used [ {} ]", taskContext)
             LOG.error("[Jenkins Plugin] task execution failed", e)
             return new ExecutionResult(false, "Failed executing task", e)
         }

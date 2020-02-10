@@ -1,6 +1,6 @@
 # GOCD Jenkins Remote job trigger task plugin
 
-The plugin expects fllowing inputs:
+The plugin expects following inputs:
 - Jenkins Server Url (required)
 - Job Name (required)
 - Job Token (optional)
@@ -8,15 +8,15 @@ The plugin expects fllowing inputs:
 - Password (optional)
 - Job Parameter (optional)
 
-*NOTE:* If both `Job Token` and `user/password` was supplied then `Job Token` will be used to trigger the job.
+**NOTE:** If both `Job Token` and `user/password` was supplied then `Job Token` will be used to trigger the job.
 
 ### Job Parameters
 All parameter should be supplied in the `Key=Value` format and *separated by a comma*.
 ```text
 k1=v1,
-k_2=v2
-k3=v-3
-k4="v4"
+k_2=v2,
+k3=v-3,
+k4="v4",
 k5='v5'
 ```
  
